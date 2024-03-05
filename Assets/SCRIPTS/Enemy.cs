@@ -1,68 +1,62 @@
-﻿using System.Collections;
+﻿﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-
+using System;
 public class Enemy : MonoBehaviour
 {
-    //Health,AttackPower,MoveSpeed
-    public int health,attackPower;
-    public float moveSpeed;
+    [SerializeField]GameObject[] checkpoints;
+    Vector2 siguientePosicion;
+    float velocidad = 3.5f;
+    float distanciaCambio = 0.5f;
+    int numeroSiguienteCheckpoint = 0;
 
-    public Animator animator;
-    public float attackInterval;
-    Coroutine attackOrder;
+    void Start(){
+        checkpoints = GameObject.FindGameObjectsWithTag("WayPoint");
 
+
+    System.Array.Sort(checkpoints, (x, y) =>
+{
+    int comparacionX = x.transform.position.x.CompareTo(y.transform.position.x);
+    if (comparacionX == 0)
+    {
+        // Si las coordenadas X son iguales, compara las coordenadas Y
+        return x.transform.position.y.CompareTo(y.transform.position.y);
+    }
+    else
+    {
+        return comparacionX; // Si las coordenadas X son diferentes, devuelve la comparación de las X
+    }
+});
+
+            }
+    
     void Update()
     {
-          
+        Console.WriteLine(checkpoints[numeroSiguienteCheckpoint].transform.position);
+        // Si no hay checkpoints, no hagas nada
+        if (checkpoints.Length == 0)
+            return;
+
+        // Actualiza siguientePosicion antes de mover al enemigo hacia ese checkpoint
+        siguientePosicion = checkpoints[numeroSiguienteCheckpoint].transform.position;
+
+        // Mueve al enemigo hacia el siguiente checkpoint
+        transform.position = Vector2.MoveTowards(
+            transform.position,
+            siguientePosicion,
+            velocidad * Time.deltaTime);
+
+        // Si el enemigo llega al checkpoint, pasa al siguiente
+        if (Vector2.Distance(transform.position, siguientePosicion) < distanciaCambio)
+        {
+            numeroSiguienteCheckpoint++;
+            if (numeroSiguienteCheckpoint >= checkpoints.Length)
+                numeroSiguienteCheckpoint = 0;
+        }
     }
 
-    IEnumerator Attack()
+    private void OnCollisionEnter(Collision collision)
     {
-        animator.Play("Attack",0,0);
-        //Wait attackInterval 
-        yield return new WaitForSeconds(attackInterval);
-        //Attack Again
-        attackOrder = StartCoroutine(Attack());
+        collision.gameObject.SendMessage("PerderVida");
     }
-
-    //Moving forward
-    void Move()
-    {
-        animator.Play("Move");
-        transform.Translate(-transform.right*moveSpeed*Time.deltaTime);
-    }
-
-    public void InflictDamage()
-    {
-
-
-    }
-
-    //Lose health
-    public void LoseHealth()
-    {
-        //Decrease health value
-        health--;
-        //Blink Red animation
-        StartCoroutine(BlinkRed());
-        //Check if health is zero => destroy enemy
-        if(health<=0)
-            Destroy(gameObject);
-    }
-
-    IEnumerator BlinkRed()
-    {
-        //Change the spriterendere color to red
-        GetComponent<SpriteRenderer>().color=Color.red;
-        //Wait for really small amount of time 
-        yield return new WaitForSeconds(0.2f);
-        //Revert to default color
-        GetComponent<SpriteRenderer>().color=Color.white;
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-    
-       
-    }    
 }

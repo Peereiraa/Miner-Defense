@@ -1,36 +1,55 @@
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    
     public static EnemySpawner instance;
-    void Awake(){ instance = this; }
-    //Enemy prefavs
+
+    void Awake()
+    {
+        instance = this;
+    }
+
+    // Enemy prefabs
     public List<GameObject> prefabs;
-    //Enemy spawn root points
+
+    // Enemy spawn root points
     public List<Transform> spawnPoints;
-    //Enemy spawn intervals    
-    public float spawnInterval=2f;
+
+    // Enemy spawn intervals
+    public float spawnInterval = 2f;
 
     public void StartSpawning()
     {
         StartCoroutine(SpawnDelay());
     }
+
     IEnumerator SpawnDelay()
     {
-        //call spawn method
-        SpawnEnemy();
-        //wait spawn interval
-        yield return new WaitForSeconds(spawnInterval);
-        StartCoroutine(SpawnDelay());
+        while (true)
+        {
+            // Call spawn method
+            SpawnEnemy();
+
+            // Wait spawn interval
+            yield return new WaitForSeconds(spawnInterval);
+        }
     }
+
     void SpawnEnemy()
     {
+        if (prefabs.Count == 0 || spawnPoints.Count == 0)
+        {
+            Debug.LogWarning("Enemy prefabs or spawn points are not set!");
+            return;
+        }
+
         int randomPrefabID = Random.Range(0, prefabs.Count);
         int randomSpawnPointID = Random.Range(0, spawnPoints.Count);
-        GameObject spawnedEnemy = Instantiate(prefabs[randomPrefabID],spawnPoints[randomSpawnPointID]);
 
+        GameObject spawnedEnemy = Instantiate(prefabs[randomPrefabID], spawnPoints[randomSpawnPointID].position, Quaternion.identity);
+        // Set a parent for organization (optional)
+        spawnedEnemy.transform.parent = transform;
     }
-}   
+}
