@@ -10,23 +10,15 @@ public class Enemy : MonoBehaviour
     float distanciaCambio = 0.5f;
     int numeroSiguienteCheckpoint = 0;
 
+    
     void Start(){
         checkpoints = GameObject.FindGameObjectsWithTag("WayPoint");
 
 
-    System.Array.Sort(checkpoints, (x, y) =>
-{
-    int comparacionX = x.transform.position.x.CompareTo(y.transform.position.x);
-    if (comparacionX == 0)
-    {
-        // Si las coordenadas X son iguales, compara las coordenadas Y
-        return x.transform.position.y.CompareTo(y.transform.position.y);
-    }
-    else
-    {
-        return comparacionX; // Si las coordenadas X son diferentes, devuelve la comparación de las X
-    }
-});
+    Array.Sort(checkpoints, (GameObject checkpoint1, GameObject checkpoint2) =>
+        {
+            return string.Compare(checkpoint1.name, checkpoint2.name);
+        });
 
             }
     
