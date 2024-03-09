@@ -49,7 +49,11 @@ public class EnemySpawner : MonoBehaviour
         int randomSpawnPointID = Random.Range(0, spawnPoints.Count);
 
         GameObject spawnedEnemy = Instantiate(prefabs[randomPrefabID], spawnPoints[randomSpawnPointID].position, Quaternion.identity);
+        spawnedEnemy.tag = "Enemy";
+        Debug.Log($"Enemigo instanciado con tag: {spawnedEnemy.tag}"); // Confirma el tag
+
         // Set a parent for organization (optional)
         spawnedEnemy.transform.parent = transform;
+        
     }
 }

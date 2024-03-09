@@ -6,19 +6,28 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     void Awake() { instance = this; }
 
+    public SpawnOleadas spawnController;
+    public float tiempoEntreOleadas = 10f;
 
     void Start()
     {
-
-        StartCoroutine(WaveStartDelay());
+        StartCoroutine(ComenzarOleadas());
     }
 
-    IEnumerator WaveStartDelay()
+    IEnumerator ComenzarOleadas()
     {
-        //Wait for X seconds
-        yield return new WaitForSeconds(2f);
-        //Start the enemy spawning
-        EnemySpawner.instance.StartSpawning();
-    }  
+        yield return new WaitForSeconds(2f); 
 
+        for (int i = 0; i < spawnController.oleadas.Length; i++) 
+        {
+            Oleada oleada = spawnController.oleadas[i];
+            yield return new WaitForSeconds(tiempoEntreOleadas);
+
+            for (int j = 0; j < oleada.cantidad; j++)
+            {
+                spawnController.SpawnEnemigo(oleada.enemyPrefab);
+                yield return new WaitForSeconds(oleada.tiempoEntreSpawn);
+            }
+        }
+    }
 }
