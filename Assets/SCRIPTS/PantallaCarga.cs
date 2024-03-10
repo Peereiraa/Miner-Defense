@@ -5,7 +5,8 @@ using UnityEngine.SceneManagement;
 public class PantallaCarga : MonoBehaviour
 {
     public Image loadingBar;
-    public float loadTime = 3f; // Tiempo de carga en segundos
+    public string sceneToLoad = "SampleScene"; // Nombre de la escena a cargar después de que la carga esté completa
+    public float loadTime = 4.5f; // Tiempo de carga en segundos
 
     private float currentTime = 0f;
     private AsyncOperation asyncOperation;
@@ -13,7 +14,7 @@ public class PantallaCarga : MonoBehaviour
     void Start()
     {
         // Comenzar la carga asíncrona de la escena
-        asyncOperation = SceneManager.LoadSceneAsync("pantallacarga");
+        asyncOperation = SceneManager.LoadSceneAsync(sceneToLoad);
         asyncOperation.allowSceneActivation = false; // Evitar que la escena se active automáticamente
 
         // Iniciar la animación de la barra de carga

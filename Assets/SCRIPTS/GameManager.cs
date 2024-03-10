@@ -9,8 +9,13 @@ public class GameManager : MonoBehaviour
     public SpawnOleadas spawnController;
     public float tiempoEntreOleadas = 10f;
 
+    public CurrencySystem currency;
+
+
     void Start()
     {
+//        GetComponent<CurrencySystem>().Init();
+
         StartCoroutine(ComenzarOleadas());
     }
 
@@ -27,7 +32,8 @@ public class GameManager : MonoBehaviour
             {
                 spawnController.SpawnEnemigo(oleada.enemyPrefab);
                 yield return new WaitForSeconds(oleada.tiempoEntreSpawn);
-            }
+            
         }
     }
+}
 }

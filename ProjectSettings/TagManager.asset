@@ -50,3 +50,6 @@ TagManager:
   - name: enemigos
     uniqueID: 1607951413
     locked: 0
+  - name: minero
+    uniqueID: 2690962109
+    locked: 0

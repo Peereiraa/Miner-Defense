@@ -12,15 +12,17 @@ public class Enemy : MonoBehaviour
     private int numeroSiguienteCheckpoint = 0;
 
     private Animator animator;
-    private bool isDying = false; // Nuevo flag para controlar si el enemigo está muriendo
+    private bool isDying = false; // Flag para controlar si el enemigo está muriendo
 
-    public int health = 100; // Salud inicial del enemigo
+    public int health = 100; // Salud actual del enemigo
+    public int baseHealth = 100; // Salud base del enemigo, ajustable desde el editor o mediante código
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
     }
 
+    // Llamado para aplicar daño al enemigo
     public void TakeDamage(int damage)
     {
         if (isDying) return; // Previene recibir daño si ya está muriendo
@@ -34,6 +36,14 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    // Establece la salud inicial del enemigo basándose en un factor de oleada
+    public void SetInitialHealth(int waveFactor)
+    {
+        health = baseHealth + (waveFactor * 10); // Incrementa la salud base en 10 por cada oleada
+        Debug.Log(gameObject.name + " salud inicial ajustada a: " + health);
+    }
+
+    // Procesa la muerte del enemigo
     private void Die()
     {
         if (isDying) return; // Previene que la muerte se procese múltiples veces
@@ -42,23 +52,18 @@ public class Enemy : MonoBehaviour
         animator.SetTrigger("Die");
 
         // Desactiva componentes para prevenir más interacciones o movimientos
-        GetComponent<Collider2D>().enabled = false; // Asume uso de Collider2D para juego 2D
+        GetComponent<Collider2D>().enabled = false;
 
-        // Considera desactivar otros componentes, como scripts de movimiento o IA
-
-        // Espera para destruir el objeto hasta que la animación de muerte se haya completado
-        // Ajusta este tiempo según la duración de tu animación de muerte
+        Destroy(gameObject, 1.55f); // Destruye el objeto después de la animación de muerte
     }
+
     void Start()
     {
+        // Inicialización de checkpoints
         checkpoints = GameObject.FindGameObjectsWithTag("WayPoint");
 
-
-        Array.Sort(checkpoints, (GameObject checkpoint1, GameObject checkpoint2) =>
-            {
-                return string.Compare(checkpoint1.name, checkpoint2.name);
-            });
-
+        Array.Sort(checkpoints, (checkpoint1, checkpoint2) => 
+            string.Compare(checkpoint1.name, checkpoint2.name));
     }
 
     void Update()

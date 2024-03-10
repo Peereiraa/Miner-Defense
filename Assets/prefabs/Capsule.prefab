@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4156360013933284643}
   m_Layer: 0
   m_Name: Capsule
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -97,7 +97,7 @@ Animator:
   m_GameObject: {fileID: 1827646870909530236}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 902b3d1471e3c1c4ca26e552e37f5348, type: 2}
+  m_Controller: {fileID: 9100000, guid: 4afcebcc34f072a4480b823c119d862e, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 1
   m_ApplyRootMotion: 0
@@ -120,10 +120,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddedb01d56595184c90fcfc871a54b05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  waypoints:
-  - {fileID: 6455503135738747263, guid: c13e699642659274d8ca449aba705a8e, type: 3}
-  - {fileID: 6455503135738747263, guid: c13e699642659274d8ca449aba705a8e, type: 3}
-  - {fileID: 6455503135738747263, guid: c13e699642659274d8ca449aba705a8e, type: 3}
+  checkpoints: []
+  health: 100
 --- !u!61 &4156360013933284643
 BoxCollider2D:
   m_ObjectHideFlags: 0

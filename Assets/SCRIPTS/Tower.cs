@@ -38,10 +38,7 @@ public class Tower : MonoBehaviour
             {
                 enemy.GetComponent<Enemy>().TakeDamage(damage);
             }
-            else
-            {
-                Debug.LogWarning($"El objeto detectado no es un enemigo: {enemy.gameObject.name} con tag {enemy.tag}");
-            }
+           
         }
     }
 
