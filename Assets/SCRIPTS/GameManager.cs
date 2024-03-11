@@ -1,39 +1,46 @@
 using UnityEngine;
 using System.Collections;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
-    void Awake() { instance = this; }
+    public TextMeshProUGUI textoOleadas;
 
     public SpawnOleadas spawnController;
-    public float tiempoEntreOleadas = 10f;
+    public float tiempoDespuesDeOleada = 5f; // Tiempo para esperar después de que se eliminen todos los enemigos
 
-    public CurrencySystem currency;
-
+    void Awake()
+    {
+        instance = this;
+    }
 
     void Start()
     {
-//        GetComponent<CurrencySystem>().Init();
-
         StartCoroutine(ComenzarOleadas());
     }
 
     IEnumerator ComenzarOleadas()
     {
-        yield return new WaitForSeconds(2f); 
+        yield return new WaitForSeconds(2f);
 
-        for (int i = 0; i < spawnController.oleadas.Length; i++) 
+        int oleadaActual = 0;
+
+        while (oleadaActual < spawnController.oleadas.Length)
         {
-            Oleada oleada = spawnController.oleadas[i];
-            yield return new WaitForSeconds(tiempoEntreOleadas);
+            Oleada oleada = spawnController.oleadas[oleadaActual];
+            textoOleadas.text = "Oleada " + (oleadaActual + 1);
 
             for (int j = 0; j < oleada.cantidad; j++)
             {
                 spawnController.SpawnEnemigo(oleada.enemyPrefab);
                 yield return new WaitForSeconds(oleada.tiempoEntreSpawn);
-            
+            }
+
+            yield return new WaitForSeconds(oleada.tiempoEntreOleadas + tiempoDespuesDeOleada);
+
+            spawnController.IncrementarOleada(); // Incrementa la oleada actual
+            oleadaActual++;
         }
     }
-}
 }
