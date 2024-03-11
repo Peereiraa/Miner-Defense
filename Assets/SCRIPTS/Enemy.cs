@@ -12,10 +12,10 @@ public class Enemy : MonoBehaviour
     private int numeroSiguienteCheckpoint = 0;
 
     private Animator animator;
-    private bool isDying = false; // Flag para controlar si el enemigo está muriendo
+    private bool isDying = false; 
 
-    public int health = 100; // Salud actual del enemigo
-    public int baseHealth = 100; // Salud base del enemigo, ajustable desde el editor o mediante código
+    public int health = 100; 
+    public int baseHealth = 100; 
 
     private void Awake()
     {
@@ -45,26 +45,32 @@ public class Enemy : MonoBehaviour
 
     // Procesa la muerte del enemigo
     private void Die()
-    {
-        if (isDying) return; // Previene que la muerte se procese múltiples veces
+{
+    if (isDying) return; // Previene que la muerte se procese múltiples veces
 
-        isDying = true; // Establece el estado a muriendo
-        animator.SetTrigger("Die");
+    isDying = true; // Establece el estado a muriendo
+    animator.SetTrigger("Die");
 
-        // Desactiva componentes para prevenir más interacciones o movimientos
-        GetComponent<Collider2D>().enabled = false;
+    // Desactiva componentes para prevenir más interacciones o movimientos
+    GetComponent<Collider2D>().enabled = false;
 
-        Destroy(gameObject, 1.55f); // Destruye el objeto después de la animación de muerte
-    }
+    // Decrementa el contador de enemigos restantes en la oleada actual
+    GameManager.instance.spawnController.DecrementarEnemigosRestantes();
+
+    Destroy(gameObject, 1.55f); // Destruye el objeto después de la animación de muerte
+}
 
     void Start()
-    {
-        // Inicialización de checkpoints
-        checkpoints = GameObject.FindGameObjectsWithTag("WayPoint");
+{
+    // Inicialización de checkpoints
+    checkpoints = GameObject.FindGameObjectsWithTag("WayPoint");
 
-        Array.Sort(checkpoints, (checkpoint1, checkpoint2) => 
-            string.Compare(checkpoint1.name, checkpoint2.name));
-    }
+    Array.Sort(checkpoints, (checkpoint1, checkpoint2) => 
+        string.Compare(checkpoint1.name, checkpoint2.name));
+
+    // Reinicia el contador de checkpoints al comenzar una nueva oleada
+    numeroSiguienteCheckpoint = 0;
+}
 
     void Update()
     {
