@@ -38,7 +38,6 @@ public class Tower : MonoBehaviour
             {
                 enemy.GetComponent<Enemy>().TakeDamage(damage);
             }
-           
         }
     }
 

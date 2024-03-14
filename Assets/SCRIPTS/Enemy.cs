@@ -1,25 +1,27 @@
-﻿﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿﻿using UnityEngine;
+using System.Collections;
 using System;
 
 public class Enemy : MonoBehaviour
 {
     [SerializeField] private GameObject[] checkpoints;
+    public int vidaActual = 5;
+    [SerializeField] private Torriki torriki;
     private Vector2 siguientePosicion;
     private float velocidad = 3.5f;
     private float distanciaCambio = 0.5f;
     private int numeroSiguienteCheckpoint = 0;
 
     private Animator animator;
-    private bool isDying = false; 
+    private bool isDying = false;
 
-    public int health = 100; 
-    public int baseHealth = 100; 
+    public int health = 100;
+    public int baseHealth = 100;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        torriki = GetComponent<Torriki>();
     }
 
     // Llamado para aplicar daño al enemigo
@@ -45,61 +47,77 @@ public class Enemy : MonoBehaviour
 
     // Procesa la muerte del enemigo
     private void Die()
-{
-    if (isDying) return; // Previene que la muerte se procese múltiples veces
+    {
+        if (isDying) return; // Previene que la muerte se procese múltiples veces
 
-    isDying = true; // Establece el estado a muriendo
-    animator.SetTrigger("Die");
+        isDying = true; // Establece el estado a muriendo
+        animator.SetTrigger("Die");
 
-    // Desactiva componentes para prevenir más interacciones o movimientos
-    GetComponent<Collider2D>().enabled = false;
+        // Desactiva componentes para prevenir más interacciones o movimientos
+        GetComponent<Collider2D>().enabled = false;
 
-    // Decrementa el contador de enemigos restantes en la oleada actual
-    GameManager.instance.spawnController.DecrementarEnemigosRestantes();
+        // Decrementa el contador de enemigos restantes en la oleada actual
+        GameManager.instance.spawnController.DecrementarEnemigosRestantes();
 
-    Destroy(gameObject, 1.55f); // Destruye el objeto después de la animación de muerte
-}
+        Destroy(gameObject, 1.55f); // Destruye el objeto después de la animación de muerte
+    }
 
     void Start()
-{
-    // Inicialización de checkpoints
-    checkpoints = GameObject.FindGameObjectsWithTag("WayPoint");
+    {
+        // Inicialización de checkpoints
+        checkpoints = GameObject.FindGameObjectsWithTag("WayPoint");
 
-    Array.Sort(checkpoints, (checkpoint1, checkpoint2) => 
-        string.Compare(checkpoint1.name, checkpoint2.name));
+        Array.Sort(checkpoints, (checkpoint1, checkpoint2) =>
+            string.Compare(checkpoint1.name, checkpoint2.name));
 
-    // Reinicia el contador de checkpoints al comenzar una nueva oleada
-    numeroSiguienteCheckpoint = 0;
-}
+        // Reinicia el contador de checkpoints al comenzar una nueva oleada
+        numeroSiguienteCheckpoint = 0;
+    }
 
     void Update()
+{
+    if (isDying) return;
+
+    // Si no hay checkpoints, no hagas nada
+    if (checkpoints.Length == 0)
+        return;
+
+    // Actualiza siguientePosicion antes de mover al enemigo hacia ese checkpoint
+    siguientePosicion = checkpoints[numeroSiguienteCheckpoint].transform.position;
+
+    // Mueve al enemigo hacia el siguiente checkpoint
+    transform.position = Vector2.MoveTowards(
+        transform.position,
+        siguientePosicion,
+        velocidad * Time.deltaTime);
+
+    // Si el enemigo llega al checkpoint, pasa al siguiente
+    if (Vector2.Distance(transform.position, siguientePosicion) < distanciaCambio)
     {
-        if(isDying) return;
-        Console.WriteLine(checkpoints[numeroSiguienteCheckpoint].transform.position);
-        // Si no hay checkpoints, no hagas nada
-        if (checkpoints.Length == 0)
-            return;
+        numeroSiguienteCheckpoint++;
 
-        // Actualiza siguientePosicion antes de mover al enemigo hacia ese checkpoint
-        siguientePosicion = checkpoints[numeroSiguienteCheckpoint].transform.position;
-
-        // Mueve al enemigo hacia el siguiente checkpoint
-        transform.position = Vector2.MoveTowards(
-            transform.position,
-            siguientePosicion,
-            velocidad * Time.deltaTime);
-
-        // Si el enemigo llega al checkpoint, pasa al siguiente
-        if (Vector2.Distance(transform.position, siguientePosicion) < distanciaCambio)
+        // Verifica si el enemigo ha llegado al final de la lista de checkpoints
+        if (numeroSiguienteCheckpoint >= checkpoints.Length)
         {
-            numeroSiguienteCheckpoint++;
-            if (numeroSiguienteCheckpoint >= checkpoints.Length)
-                numeroSiguienteCheckpoint = 0;
+            torriki.decrementarVida();
+            Die();
+            
+        }
+        else
+        {
+            // Si no ha llegado al final, ajusta el índice al siguiente checkpoint
+            // Sin reiniciar el índice si es el último checkpoint
+            siguientePosicion = checkpoints[numeroSiguienteCheckpoint].transform.position;
         }
     }
+}
 
     private void OnCollisionEnter(Collision collision)
     {
         collision.gameObject.SendMessage("PerderVida");
     }
+
+    
+
+    
 }
